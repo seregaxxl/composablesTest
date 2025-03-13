@@ -13,11 +13,22 @@
     </div>
     <button type="submit" :disabled="!formState.isValid">Submit</button>
   </form>
+  <div>
+    <h1>HTTP Request Example</h1>
+    <button @click="fetchData">Fetch Data</button>
+    <p v-if="isLoading">Loading...</p>
+    <div v-if="isSuccess">
+      <h2>Data:</h2>
+      <pre>{{ data }}</pre>
+    </div>
+    <p v-if="isError" class="error">Error: {{ error }}</p>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useFormValidation } from '../composables/useFormValidation';
+import { useHttp } from '../composables/useHttp';
 
 const rules = {
   username: [
@@ -49,6 +60,28 @@ const handleSubmit = () => {
   } else {
     console.log('Form is invalid');
   }
+};
+
+const {
+  data,
+  status,
+  isLoading,
+  isSuccess,
+  isError,
+  error,
+  execute,
+} = useHttp<any>();
+
+const requestData = {
+    url: 'https://jsonplaceholder.typicode.com/posts/1',
+    method: 'GET' as 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  }
+
+const fetchData = async () => {
+  await execute(requestData);
 };
 </script>
 
